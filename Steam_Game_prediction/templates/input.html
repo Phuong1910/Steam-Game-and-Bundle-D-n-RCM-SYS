@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if name %}
+    <h1>User id: {{ name }} !!</h1>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load("current", {packages:["corechart"]});
+      google.charts.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+            {% for key, value in data_id.items() %}
+                {% if value is string %}
+                    ['{{ key }}', '{{ value }}'],
+                {% else %}
+                    ['{{ key }}', {{ value }}],
+                {% endif %}
+            {% endfor %}
+        ]);
+
+        var options = {
+          title: 'My Daily Activities',
+          is3D: true,
+          //pieHole: 0.5
+          pieStartAngle: 100
+          /*slices: {
+            2: {offset: 0.2},
+            3: {offset: 0.3}
+          }*/
+          /*slices: {
+            1: { color: 'transparent' }
+          }*/
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart_3d'));
+        chart.draw(data, options);
+      }
+    </script>
+    <div id="piechart_3d" style="width: 900px; height: 500px;"></div>
+    <div id="boxcontainer" data-user-template-container>
+            {% for game_pred in data_predict %}
+                <div class="gamebox">
+                    <img src={{app_id[game_pred]}} alt="game banner">
+                    <H1 class="name" data-name> {{game_pred}}</H1>
+                    <H1 class="genre" data-genre> {{data_predict[game_pred]}}</H1>
+
+                </div>
+
+            {% endfor %}
+    </div>
+{% else %}
+    <h1>What is your name?</h1>
+    </br>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        {{ form.name.label }}
+        {{ form.name() }}
+        </br>
+        {{ form.submit()}}
+    </form>
+{% endif %}
+
+{% endblock %}
